@@ -1,0 +1,33 @@
+{
+  "name": "portainer-deployer",
+  "version": "1.0.0",
+  "description": "Deployer of new versions of containers in portainer",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SloCompTech/portainer-deployer.git"
+  },
+  "keywords": [
+    "portainer",
+    "docker",
+    "docker-compose",
+    "automation"
+  ],
+  "author": "Martin Dagarin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SloCompTech/portainer-deployer/issues"
+  },
+  "homepage": "https://github.com/SloCompTech/portainer-deployer#readme",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "helmet": "^3.22.0"
+  }
+}
