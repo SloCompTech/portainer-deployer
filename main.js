@@ -17,8 +17,26 @@ if (fs.existsSync(configPath)) {
     throw config.error;
 }
 
-// TODO: Validate env vars (proces.env)
+// Config validation
+const Joi = require('@hapi/joi');
+const configSchema = Joi.object().keys({
+  DISABLE_AUTH: Joi.any(), // Disable authentication
+  PORTAINER_API: Joi.string().required(), // Portainer API URL
+  PORTAINER_DIR: Joi.string().required(), // Portainer directory
+  PORTAINER_PASS: Joi.string(), // Portainer (default) user 
+  PORTAINER_USER: Joi.string(), // Portainer (default) password
+}).unknown(true);
+const { conferror, conf } = configSchema.validate(process.env);
+if (conferror)
+  throw conferror;
 
+/**
+ * Import packages
+ * @see http://expressjs.com/en/resources/middleware/compression.html
+ * @see https://www.npmjs.com/package/helmet
+ * @see http://expressjs.com/en/resources/middleware/body-parser.html
+ */
+const auth = require('./auth');
 const bodyParser = require('body-parser');
 const compression = require('compression');
 const express = require('express');
@@ -30,22 +48,18 @@ const port = process.env.PORT || 3000;
 // Async handler
 const wrap = fn => (...args) => fn(...args).catch(args[2]);
 
-/**
- * Global handlers
- * @see http://expressjs.com/en/resources/middleware/compression.html
- * @see https://www.npmjs.com/package/helmet
- * @see http://expressjs.com/en/resources/middleware/body-parser.html
- */
+// Global handlers
 app.use(compression());
 app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(auth.init);
 
 /**
  * Deploy request handler
  */
-app.post('/', wrap(async (req, res) => {
-
+app.post('/', auth.isAuthenticated, wrap(async (req, res) => {
+  
 }));
 
 app.listen(port, wrap(async () => {
