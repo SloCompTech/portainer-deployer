@@ -4,6 +4,8 @@
   "description": "Deployer of new versions of containers in portainer",
   "main": "main.js",
   "scripts": {
+    "start": "node main.js",
+    "start:dev": "nodemon main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -31,5 +33,8 @@
     "express": "^4.17.1",
     "helmet": "^3.22.0",
     "jsonwebtoken": "^8.5.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.3"
   }
 }
