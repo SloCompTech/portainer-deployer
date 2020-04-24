@@ -32,6 +32,21 @@ if (resval.error)
 process.env = resval.value;
 
 /**
+ * Handlers
+ */
+const handlers = {};
+const handlerpath = path.join(__dirname, 'handlers');
+const files = fs.readdirSync(handlerpath);
+for (const file of files) {
+  const filepath = path.join(handlerpath, file);
+  if (filepath.endsWith('.js')) {
+    const handlerName = file.substring(0, file.length - 3);
+    console.log('Loading handler %s', handlerName);
+    handlers[handlerName] = require(filepath);
+  }
+}
+
+/**
  * Import packages
  * @see http://expressjs.com/en/resources/middleware/compression.html
  * @see https://www.npmjs.com/package/helmet
@@ -48,9 +63,6 @@ const validate = require('./validate');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Async handler
-const wrap = fn => (...args) => fn(...args).catch(args[2]);
-
 // Global handlers
 app.use(compression());
 app.use(helmet());
@@ -66,6 +78,15 @@ const deployRequestSchema = Joi.object().keys({
   data: Joi.any(),
 });
 app.post('/', auth.isAuthenticated, validate.validate(deployRequestSchema), as.wrap(async (req, res) => {
+  console.log('Here');
+  const handlerName = req.body.handler;
+  if (handlers[handlerName] && handlers[handlerName].handle) {
+    if (handlers[handlerName].handle instanceof Promise) {
+      await handlers[handlerName].handle(req, res, req.body.data);
+    } else {
+      handlers[handlerName].handle(req, res, req.body.data);
+    }
+  }
 }));
 
 app.listen(port, as.wrap(async () => {
