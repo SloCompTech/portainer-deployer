@@ -3,6 +3,7 @@
  */
 const axios = require('axios').default;
 const fs = require('fs');
+const path = require('path');
 
 /**
  * Login into portainer
@@ -38,7 +39,7 @@ const getStack = async function (token, name) {
       filters: { name: name },
     },
   });
-
+  
   // React to portainer error
   if (response.err)
     throw new Error(response.err);
@@ -53,8 +54,9 @@ const getStack = async function (token, name) {
  * @param {Stack} stack 
  */
 const updateStack = async function (token, stack) {
-  const response = await axios.put(`${process.env.PORTAINER_API}/stacks/${stack.id}`, {
-    'StackFileContent': await fs.readFile(path.join(process.env.PORTAINER_DIR,`${stack.ProjectPath.replace(/~\/data/, '')}/${stack.EntryPoint}`)),
+  const stackfile = await fs.promises.readFile(path.join(process.env.PORTAINER_DIR,`${stack.ProjectPath.replace('/data/', '')}/${stack.EntryPoint}`), 'utf8');
+  const response = await axios.put(`${process.env.PORTAINER_API}/stacks/${stack.Id}`, {
+    'StackFileContent': stackfile,
     'Env': stack.Env,
   }, {
     headers: {

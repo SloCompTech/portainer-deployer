@@ -58,6 +58,7 @@ const bodyParser = require('body-parser');
 const compression = require('compression');
 const express = require('express');
 const helmet = require('helmet');
+const util = require('util');
 const validate = require('./validate');
 
 const app = express();
@@ -78,10 +79,9 @@ const deployRequestSchema = Joi.object().keys({
   data: Joi.any(),
 });
 app.post('/', auth.isAuthenticated, validate.validate(deployRequestSchema), as.wrap(async (req, res) => {
-  console.log('Here');
   const handlerName = req.body.handler;
   if (handlers[handlerName] && handlers[handlerName].handle) {
-    if (handlers[handlerName].handle instanceof Promise) {
+    if (util.types.isAsyncFunction(handlers[handlerName].handle) || util.types.isPromise(handlers[handlerName].handle)) {
       await handlers[handlerName].handle(req, res, req.body.data);
     } else {
       handlers[handlerName].handle(req, res, req.body.data);

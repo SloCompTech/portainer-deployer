@@ -24,7 +24,7 @@ const init = async function (req, res, next) {
       const raw = Buffer.from(val, 'base64').toString('utf8');
       const credentials = raw.split(':');
       const token = await portainer.login(credentials[0] || process.env.PORTAINER_USER, credentials[1] || process.env.PORTAINER_PASS);
-      req.token = val;
+      req.token = token;
       req.user = jwt.decode(token);
     }
   } catch (e) {
