@@ -38,6 +38,7 @@ process.env = resval.value;
  * @see http://expressjs.com/en/resources/middleware/body-parser.html
  */
 const auth = require('./auth');
+const as = require('./async');
 const bodyParser = require('body-parser');
 const compression = require('compression');
 const express = require('express');
@@ -54,7 +55,7 @@ app.use(compression());
 app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(auth.init);
+app.use(as.wrap(auth.init));
 
 /**
  * Deploy request handler
@@ -63,6 +64,6 @@ app.post('/', auth.isAuthenticated, wrap(async (req, res) => {
   
 }));
 
-app.listen(port, wrap(async () => {
+app.listen(port, as.wrap(async () => {
   console.log(`Portainer deployer listening on http://localhost:${port}`);
 }));

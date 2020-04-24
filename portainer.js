@@ -20,7 +20,7 @@ const login = async function (username, password) {
   if (response.err)
     throw new Error(response.err);
   
-  return response.data?.jwt;
+  return response.data.jwt;
 };
 
 /**
