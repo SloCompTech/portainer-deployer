@@ -43,6 +43,7 @@ const bodyParser = require('body-parser');
 const compression = require('compression');
 const express = require('express');
 const helmet = require('helmet');
+const validate = require('./validate');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -60,8 +61,11 @@ app.use(as.wrap(auth.init));
 /**
  * Deploy request handler
  */
-app.post('/', auth.isAuthenticated, wrap(async (req, res) => {
-  
+const deployRequestSchema = Joi.object().keys({
+  handler: Joi.string().default('default'),
+  data: Joi.any(),
+});
+app.post('/', auth.isAuthenticated, validate.validate(deployRequestSchema), as.wrap(async (req, res) => {
 }));
 
 app.listen(port, as.wrap(async () => {
