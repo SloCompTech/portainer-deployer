@@ -12,8 +12,8 @@ const init = async function (req, res, next) {
 
   try {
     const auth = (req.headers['authorization']) ? req.headers['authorization'].split(' ') : null;
-    if (!auth)
-      throw new Error('Unauthorized');
+    if (!auth) // No autnetication
+      return next(); // Still continue, because here we only extract data
     
     const method = auth[0], val = auth[1];
     if (method == 'Bearer') { // Token
