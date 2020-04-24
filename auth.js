@@ -11,9 +11,9 @@ const init = async function (req, res, next) {
   }
 
   try {
-    const auth = req.headers['authorization']?.split(' ');
+    const auth = (req.headers['authorization']) ? req.headers['authorization'].split(' ') : null;
     if (!auth)
-      throw new Error('Unauthorized'); // TODO
+      throw new Error('Unauthorized');
     
     const method = auth[0], val = auth[1];
     if (method == 'Bearer') { // Token
@@ -36,8 +36,7 @@ const init = async function (req, res, next) {
 const isAuthenticated = function (req, res, next) {
   // Skip, if authentication disabled
   if (process.env.DISABLE_AUTH) {
-    next();
-    return;
+    return next();
   }
 
   // Check if authorized
@@ -45,7 +44,7 @@ const isAuthenticated = function (req, res, next) {
     return next();
   }
 
-  res.status(404).send('Unauthorized');
+  res.status(401).send('Unauthorized');
 }
 
 module.exports = {

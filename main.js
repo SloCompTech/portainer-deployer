@@ -25,10 +25,11 @@ const configSchema = Joi.object().keys({
   PORTAINER_DIR: Joi.string().required(), // Portainer directory
   PORTAINER_PASS: Joi.string(), // Portainer (default) user 
   PORTAINER_USER: Joi.string(), // Portainer (default) password
-}).unknown(true);
-const { conferror, conf } = configSchema.validate(process.env);
-if (conferror)
-  throw conferror;
+}).options({ allowUnknown: true });
+const resval = configSchema.validate(process.env);
+if (resval.error)
+  throw resval.error;
+process.env = resval.value;
 
 /**
  * Import packages
