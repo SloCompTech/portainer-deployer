@@ -2,14 +2,12 @@
  * Portainer functions
  */
 const axios = require('axios').default;
-const fs = require('fs');
-const path = require('path');
 
 /**
  * Login into portainer
  * @param {string} username User's username
  * @param {string} password User's password
- * @returns {string} JWT token
+ * @returns {string} Portainer access token
  */
 const login = async function (username, password) {
   const response = await axios.post(`${process.env.PORTAINER_API}/auth`, {
@@ -26,7 +24,7 @@ const login = async function (username, password) {
 
 /**
  * Get stack descriptor by name
- * @param {string} token JWT token
+ * @param {string} token Portainer access token
  * @param {string} name Stack name
  * @returns {Stack} Stack descriptor
  */
@@ -49,14 +47,40 @@ const getStack = async function (token, name) {
 }
 
 /**
- * Update stack descriptor
- * @param {string} token 
- * @param {Stack} stack 
+ * Get Stack Docker compose file content
+ * @param {string} token Portainer access token
+ * @param {number} stackId 
  */
-const updateStack = async function (token, stack) {
-  const stackfile = await fs.promises.readFile(path.join(process.env.PORTAINER_DIR,`${stack.ProjectPath.replace('/data/', '')}/${stack.EntryPoint}`), 'utf8');
+const getStackComposeFile = async function (token, stackId) {
+  // Get current stack file
+  const response = await axios.get(`${process.env.PORTAINER_API}/stacks/${stackId}/file`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  
+  // React to portainer error
+  if (response.err)
+    throw new Error(response.err);
+
+  return response.data.StackFileContent;
+}
+
+/**
+ * Update stack descriptor
+ * @param {string} token Portainer access token
+ * @param {Stack} stack stack descriptor
+ * @param {string} composeFile docker compose file contents
+ */
+const updateStack = async function (token, stack, composeFile = null) {
+  if (!composeFile)
+    composeFile = await getStackComposeFile(token, stack.Id);
+  
+  if (!composeFile || composeFile.trim().length === 0)
+    throw new Error('Docker compose file empty');
+  
   const response = await axios.put(`${process.env.PORTAINER_API}/stacks/${stack.Id}`, {
-    'StackFileContent': stackfile,
+    'StackFileContent': composeFile,
     'Env': stack.Env,
   }, {
     headers: {

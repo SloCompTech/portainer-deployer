@@ -19,7 +19,6 @@ const init = async function (req, res, next) {
     if (method == 'Bearer') { // Token
       req.token = val;
       req.user = jwt.decode(val);
-      
     } else if (method == 'Basic') { // Username & password
       const raw = Buffer.from(val, 'base64').toString('utf8');
       const credentials = raw.split(':');
