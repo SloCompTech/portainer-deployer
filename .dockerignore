@@ -1,0 +1,14 @@
+# Git directory
+.git
+
+# Host's node_modules
+node_modules
+
+# Tool files
+hooks
+.dockerignore
+.gitignore
+
+# Temporary directories
+data
+tmp
