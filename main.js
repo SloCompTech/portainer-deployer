@@ -14,7 +14,7 @@ const configPath = process.env.CONFIG || path.join(process.cwd(), '.env');
 if (fs.existsSync(configPath)) {
   const config = dotenv.config({
     encoding: 'utf8',
-    path: process.env.CONFIG,
+    path: configPath,
   });
   if (config.error)
     throw config.error;
