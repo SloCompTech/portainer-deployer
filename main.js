@@ -21,7 +21,7 @@ if (fs.existsSync(configPath)) {
 const Joi = require('@hapi/joi');
 const configSchema = Joi.object().keys({
   DISABLE_AUTH: Joi.any(), // Disable authentication
-  PORTAINER_API: Joi.string().required(), // Portainer API URL
+  PORTAINER_API: Joi.string().pattern(/^https?:\/\/.*\/api$/).required(), // Portainer API URL
   PORTAINER_PASS: Joi.string(), // Portainer (default) user 
   PORTAINER_USER: Joi.string(), // Portainer (default) password
 }).options({ allowUnknown: true });
