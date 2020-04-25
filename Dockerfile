@@ -60,6 +60,7 @@ LABEL maintainer="martin.dagarin@gmail.com" \
 #	@see https://github.com/remy/nodemon/blob/master/bin/postinstall.js (bugfix when installing nodemon)
 #
 ENV APP_VERSION=${VERSION} \
+		CONFIG=/config/.env \
 		IN_DOCKER=true \
 		NODE_ENV=${NODE_ENV}
 
