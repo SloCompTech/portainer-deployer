@@ -1,9 +1,12 @@
+const logger = require('./logger');
+
 /**
  * Load configuration
  * default: .env (inside CWD)
  * you can use CONFIG variable to set custom path to config file
  * @see https://www.npmjs.com/package/dotenv
  */
+logger.info('Loading configuration');
 const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
@@ -18,6 +21,7 @@ if (fs.existsSync(configPath)) {
 }
 
 // Config validation
+logger.info('Validating configuration');
 const Joi = require('@hapi/joi');
 const configSchema = Joi.object().keys({
   DISABLE_AUTH: Joi.any(), // Disable authentication
@@ -33,6 +37,7 @@ process.env = resval.value;
 /**
  * Handlers
  */
+logger.info('Loading handlers');
 const handlers = {};
 const handlerpath = path.join(__dirname, 'handlers');
 const files = fs.readdirSync(handlerpath);
@@ -40,7 +45,7 @@ for (const file of files) {
   const filepath = path.join(handlerpath, file);
   if (filepath.endsWith('.js')) {
     const handlerName = file.substring(0, file.length - 3);
-    console.log('Loading handler %s', handlerName);
+    logger.info(`Loading handler ${handlerName}`);
     handlers[handlerName] = require(filepath);
   }
 }
@@ -57,6 +62,7 @@ const bodyParser = require('body-parser');
 const compression = require('compression');
 const express = require('express');
 const helmet = require('helmet');
+const requestIp = require('request-ip');
 const util = require('util');
 const validate = require('./validate');
 
@@ -78,9 +84,11 @@ const deployRequestSchema = Joi.object().keys({
   data: Joi.any(),
 });
 app.post('/', auth.isAuthenticated, validate.validate(deployRequestSchema), as.wrap(async (req, res) => {
+  logger.info(`Deploy request from ${requestIp.getClientIp(req)}`);
+  
   const handlerName = req.body.handler;
-  if (handlers[handlerName] && handlers[handlerName].handle) {
-    if (util.types.isAsyncFunction(handlers[handlerName].handle) || util.types.isPromise(handlers[handlerName].handle)) {
+  if (handlers[handlerName] && handlers[handlerName].handle) { // Check if handler exists
+    if (util.types.isAsyncFunction(handlers[handlerName].handle) || util.types.isPromise(handlers[handlerName].handle)) { // Check if promise/async
       await handlers[handlerName].handle(req, res, req.body.data);
     } else {
       handlers[handlerName].handle(req, res, req.body.data);
@@ -89,5 +97,5 @@ app.post('/', auth.isAuthenticated, validate.validate(deployRequestSchema), as.w
 }));
 
 app.listen(port, as.wrap(async () => {
-  console.log(`Portainer deployer listening on http://localhost:${port}`);
+  logger.info(`Portainer deployer listening on http://localhost:${port}`);
 }));
