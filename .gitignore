@@ -105,3 +105,6 @@ dist
 
 tmp
 data
+
+# Jetbrains Developer Tools
+.idea

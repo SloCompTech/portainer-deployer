@@ -12,3 +12,6 @@ hooks
 # Temporary directories
 data
 tmp
+
+# Jetbrains Developer Tools
+.idea
