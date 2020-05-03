@@ -96,6 +96,20 @@ app.post('/', auth.isAuthenticated, validate.validate(deployRequestSchema), as.w
   }
 }));
 
+/**
+ * Not found handler
+ */
+app.use((req, res, next) => {
+  return res.status(404).send({ error: { message: 'Not found' }});
+});
+
+/**
+ * Error handler
+ */
+app.use((err, req, res, next) => {
+  return res.status(err.status || 500).send({ error: err });
+});
+
 app.listen(port, as.wrap(async () => {
-  logger.info(`Portainer deployer listening on http://localhost:${port}`);
+  logger.info(`Portainer deployer listening on ${port}`);
 }));

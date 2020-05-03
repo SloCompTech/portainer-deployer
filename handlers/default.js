@@ -12,7 +12,7 @@ const handle = async (req, res, data) => {
   const datav = await dataSchema.validateAsync(data);
   const stackptr = await portainer.getStack(req.token, datav.stack);
   if (!stackptr)
-    throw new Error('Stack not found');
+    return res.status(404).send({ error: 'Stack not found'});
   
   // Update environment variables (do not create non existing vars)
   const keys = Object.keys(datav.env);
@@ -25,7 +25,7 @@ const handle = async (req, res, data) => {
 
   await portainer.updateStack(req.token, stackptr);
 
-  res.status(200).end();
+  return res.status(200).end();
 }
 
 module.exports = {

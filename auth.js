@@ -49,7 +49,7 @@ const isAuthenticated = function (req, res, next) {
     return next();
   }
 
-  res.status(401).send('Unauthorized');
+  return res.status(401).send({ error: { message: 'Unauthorized' }});
 }
 
 module.exports = {
