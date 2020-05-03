@@ -48,7 +48,6 @@ services:
     container_name: portainer-deployer
     environment:
       - PORTAINER_API="http://localhost:9000/api"
-      - FREQUENCY=173.250M
       - TZ=Europe/Ljubljana
     ports:
       - "3000:3000"
