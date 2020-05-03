@@ -12,6 +12,10 @@ npm run start:dev
 
 # Production
 npm run start
+
+# Development run commands
+DISABLE_AUTH=1 PORTAINER_API=http://localhost:9000/api npm run start:dev
+PORTAINER_API=http://localhost:9000/api npm run start:dev
 ```
 
 ## Docker
@@ -107,4 +111,3 @@ Default handler **changes** value of **existing** *environment variables* of sta
   }
 }
 ```
-
