@@ -33,17 +33,23 @@ const getStack = async function (token, name) {
     headers: {
       'Authorization': `Bearer ${token}`,
     },
-    params: {
-      filters: { name: name },
-    },
   });
   
   // React to portainer error
   if (response.err)
     throw new Error(response.err);
 
-  // Return stack only if exactly one found
-  return (response.data && Array.isArray(response.data) && response.data.length == 1) ? response.data[0] : null;
+  // Check if stack list was returned
+  if (!response.data || !Array.isArray(response.data))
+    return null;
+  
+  // Find in stack list
+  for (const stack of response.data) {
+    if (stack.Name === name)
+      return stack;
+  }
+
+  return null; // Stack not found
 }
 
 /**
